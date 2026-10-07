@@ -56,7 +56,7 @@ export function AppShell({ variant, children }: { variant: "customer" | "admin";
         {variant === "admin" && <span className="-mt-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Admin</span>}
         <nav className="flex flex-col gap-1">
           {nav.map((n) => (
-            <Link key={n.to} to={n.to} activeOptions={{ exact: n.exact }} className={linkCls} activeProps={{ className: activeCls }}>
+            <Link key={n.to} to={n.to} activeOptions={{ exact: !!n.exact }} className={linkCls} activeProps={{ className: activeCls }}>
               <n.icon className="size-4" /> {n.label}
             </Link>
           ))}
@@ -71,7 +71,7 @@ export function AppShell({ variant, children }: { variant: "customer" | "admin";
       {variant === "admin" && (
         <nav className="sticky top-[61px] z-20 flex gap-1 overflow-x-auto border-b border-border bg-background/80 px-3 py-2 backdrop-blur md:hidden">
           {nav.map((n) => (
-            <Link key={n.to} to={n.to} activeOptions={{ exact: n.exact }} className="whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground" activeProps={{ className: "bg-primary text-primary-foreground" }}>
+            <Link key={n.to} to={n.to} activeOptions={{ exact: !!n.exact }} className="whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground" activeProps={{ className: "bg-primary text-primary-foreground" }}>
               {n.label}
             </Link>
           ))}

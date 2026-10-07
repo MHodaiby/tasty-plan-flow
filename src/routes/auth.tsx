@@ -31,7 +31,7 @@ const registerSchema = z.object({
 });
 type RegisterForm = z.infer<typeof registerSchema>;
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, error, children }: { label: string; error?: string | undefined; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
       <Label>{label}</Label>
@@ -55,7 +55,7 @@ function AuthPage() {
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({ email: login.email.trim(), password: login.password });
     setBusy(false);
-    if (error) return toast.error(error.message === "Invalid login credentials" ? "Email or password is incorrect" : error.message);
+    if (error) { toast.error(error.message === "Invalid login credentials" ? "Email or password is incorrect" : error.message); return; }
     navigate({ to: "/dashboard" });
   }
 
@@ -65,7 +65,7 @@ function AuthPage() {
     if (!parsed.success) {
       const errs: typeof errors = {};
       parsed.error.issues.forEach((i) => (errs[i.path[0] as keyof RegisterForm] = i.message));
-      return setErrors(errs);
+      setErrors(errs); return;
     }
     setErrors({});
     setBusy(true);
@@ -75,7 +75,7 @@ function AuthPage() {
       options: { emailRedirectTo: `${window.location.origin}/dashboard`, data: { full_name, phone, delivery_address } },
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     if (data.session) navigate({ to: "/dashboard" });
     else setSent(true);
   }
