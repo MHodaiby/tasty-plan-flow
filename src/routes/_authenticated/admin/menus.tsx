@@ -25,7 +25,7 @@ function Menus() {
   async function createNext() {
     const latest = list.reduce((a, m) => (m.week_start > a ? m.week_start : a), addDays(weekStartOf(), -7));
     const { data, error } = await supabase.from("weekly_menus").insert({ week_start: addDays(latest, 7) }).select().single();
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     setSel(data.id); refresh();
   }
 

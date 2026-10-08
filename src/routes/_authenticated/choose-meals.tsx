@@ -26,7 +26,7 @@ function ChooseMeals() {
       supabase.from("weekly_menus").select("*, weekly_menu_items(meals(*))").eq("is_published", true).gte("week_start", weekStartOf()).order("week_start") as never),
   });
   const [menuId, setMenuId] = useState<string>();
-  useEffect(() => { if (!menuId && menus.data?.length) setMenuId(menus.data[0].id); }, [menus.data, menuId]);
+  useEffect(() => { if (!menuId && menus.data?.length) setMenuId(menus.data[0]!.id); }, [menus.data, menuId]);
   const menu = menus.data?.find((m) => m.id === menuId);
 
   const week = useQuery({
@@ -61,14 +61,14 @@ function ChooseMeals() {
     const { error } = await supabase.from("meal_selections").upsert(
       { subscription_id: sub!.id, user_id: sub!.user_id, menu_id: menu.id, delivery_date: day, meal_id: mealId },
       { onConflict: "subscription_id,delivery_date" });
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     const next = week.data!.dates.find((d) => d !== day && !week.data!.sels[d]);
     if (next) setDay(next);
     refresh();
   }
   async function confirm() {
     const { error } = await supabase.rpc("confirm_week", { _subscription_id: sub!.id, _menu_id: menu!.id });
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Your week is confirmed!"); refresh();
   }
 
