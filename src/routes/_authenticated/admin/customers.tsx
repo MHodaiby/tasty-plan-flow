@@ -1,12 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AppShell, Empty, PageHeader } from "@/components/AppShell";
+import { useState } from "react";
+import { AppShell, Empty, Loading, PageHeader, Panel } from "@/components/AppShell";
+import { StatusBadge } from "@/components/StatusBadge";
+import { Input } from "@/components/ui/input";
+import { useAllSubs, useProfiles } from "@/lib/data";
 
 export const Route = createFileRoute("/_authenticated/admin/customers")({
-  head: () => ({ meta: [{ title: "Customers — Sage Table" }, { name: "description", content: "Customers" }, { property: "og:title", content: "Customers — Sage Table" }, { property: "og:description", content: "Customers" }] }),
-  component: () => (
-    <AppShell variant="admin">
-      <PageHeader title="Customers" />
-      <Empty>This screen hasn't been built yet.</Empty>
-    </AppShell>
-  ),
+  head: () => ({ meta: [{ title: "Customers — Sage Table" }, { name: "description", content: "All customers." }, { property: "og:title", content: "Customers — Sage Table" }, { property: "og:description", content: "All customers." }] }),
+  component: Customers,
 });
+
+function Customers() {
+  const profiles = useProfiles(); const subs = useAllSubs();
+  const [q, setQ] = useState("");
+  if (profiles.isLoading) return <AppShell variant="admin"><Loading /></AppShell>;
+  const list = (profiles.data ?? []).filter((p) => `${p.full_name} ${p.email} ${p.phone}`.toLowerCase().includes(q.toLowerCase()));
+  return (
+    <AppShell variant="admin">
+      <PageHeader title="Customers" action={<Input placeholder="Search…" value={q} onChange={(e) => setQ(e.target.value)} className="sm:w-64" />} />
+      {!list.length ? <Empty>No customers found.</Empty> : (
+        <div className="grid gap-3 md:grid-cols-2">
+          {list.map((p) => {
+            const latest = subs.data?.find((s) => s.user_id === p.id);
+            return (
+              <Panel key={p.id} className="text-sm">
+                <div className="flex items-start justify-between gap-2"><div><p className="font-semibold">{p.full_name || "—"}</p><p className="text-muted-foreground">{p.email}</p></div>{latest && <StatusBadge status={latest.status} />}</div>
+                <p className="mt-2">{p.phone}</p><p className="text-muted-foreground">{p.delivery_address}</p>
+              </Panel>
+            );
+          })}
+        </div>
+      )}
+    </AppShell>
+  );
+}
