@@ -24,10 +24,10 @@ function Meals() {
   const [f, setF] = useState<typeof blank | null>(null);
 
   async function save() {
-    if (!f || f.name.trim().length < 2) return toast.error("Enter a meal name");
+    if (!f || f.name.trim().length < 2) { toast.error("Enter a meal name"); return; }
     const row = { name: f.name.trim(), description: f.description, category: f.category || "Main", image_url: f.image_url || null };
     const { error } = f.id ? await supabase.from("meals").update(row).eq("id", f.id) : await supabase.from("meals").insert(row);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Meal saved"); setF(null); refresh();
   }
   async function toggle(id: string, is_active: boolean) {

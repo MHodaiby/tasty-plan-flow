@@ -39,12 +39,12 @@ function SubscriptionPage() {
   const open = subs.data?.find((s) => OPEN_STATUSES.includes(s.status));
 
   async function submit() {
-    if (days.length !== count) return toast.error(`Choose exactly ${count} delivery days`);
+    if (days.length !== count) { toast.error(`Choose exactly ${count} delivery days`); return; }
     setBusy(true);
     const { data } = await supabase.auth.getUser();
     const { error } = await supabase.from("subscriptions").insert({ user_id: data.user!.id, billing_period: period, days_per_week: count, default_days: [...days].sort(), status: "pending_payment" });
     setBusy(false);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Request sent! We'll contact you with a payment link.");
     refresh();
   }

@@ -19,16 +19,16 @@ export function SubscriptionAdminCard({ sub }: { sub: Subscription & { profiles:
     amount: "", reference: "", notes: sub.admin_notes ?? "",
   });
 
-  async function update(patch: Record<string, unknown>, msg: string) {
+  async function update(patch: Parameters<ReturnType<typeof supabase.from<"subscriptions">>["update"]>[0], msg: string) {
     const { error } = await supabase.from("subscriptions").update(patch).eq("id", sub.id);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success(msg); setOpen(false); refresh();
   }
   async function activate() {
-    if (!f.start || !f.end || f.end < f.start) return toast.error("Choose a valid start and end date");
+    if (!f.start || !f.end || f.end < f.start) { toast.error("Choose a valid start and end date"); return; }
     const { data } = await supabase.auth.getUser();
     const pay = await supabase.from("payments").insert({ subscription_id: sub.id, user_id: sub.user_id, amount: f.amount ? Number(f.amount) : null, reference: f.reference || null, recorded_by: data.user!.id });
-    if (pay.error) return toast.error(errMsg(pay.error));
+    if (pay.error) { toast.error(errMsg(pay.error)); return; }
     await update({ status: "active", start_date: f.start, end_date: f.end, payment_received_at: new Date().toISOString(), admin_notes: f.notes || null }, "Payment recorded and subscription activated");
   }
   const setStatus = (status: SubStatus) => update({ status }, "Status updated");

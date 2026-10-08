@@ -23,11 +23,11 @@ function ProfilePage() {
   useEffect(() => { if (me.data) setF({ full_name: me.data.full_name, phone: me.data.phone, delivery_address: me.data.delivery_address }); }, [me.data]);
 
   async function save() {
-    if (f.full_name.trim().length < 2 || f.delivery_address.trim().length < 8) return toast.error("Please fill in your name and full address");
+    if (f.full_name.trim().length < 2 || f.delivery_address.trim().length < 8) { toast.error("Please fill in your name and full address"); return; }
     setBusy(true);
     const { error } = await supabase.from("profiles").update(f).eq("id", me.data!.id);
     setBusy(false);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Profile saved"); refresh();
   }
 
