@@ -1,12 +1,32 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AppShell, Empty, PageHeader } from "@/components/AppShell";
+import { useState } from "react";
+import { AppShell, Empty, Loading, PageHeader } from "@/components/AppShell";
+import { SubscriptionAdminCard } from "@/components/SubscriptionAdminCard";
+import { useAllSubs } from "@/lib/data";
+import { STATUS_LABEL, type SubStatus } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin/subscriptions")({
-  head: () => ({ meta: [{ title: "Subscriptions — Sage Table" }, { name: "description", content: "Subscriptions" }, { property: "og:title", content: "Subscriptions — Sage Table" }, { property: "og:description", content: "Subscriptions" }] }),
-  component: () => (
+  head: () => ({ meta: [{ title: "Subscriptions — Sage Table" }, { name: "description", content: "Manage all subscriptions." }, { property: "og:title", content: "Subscriptions — Sage Table" }, { property: "og:description", content: "Manage all subscriptions." }] }),
+  component: Subs,
+});
+
+function Subs() {
+  const subs = useAllSubs();
+  const [filter, setFilter] = useState<SubStatus | "all">("active");
+  if (subs.isLoading) return <AppShell variant="admin"><Loading /></AppShell>;
+  const list = (subs.data ?? []).filter((s) => filter === "all" || s.status === filter);
+  return (
     <AppShell variant="admin">
       <PageHeader title="Subscriptions" />
-      <Empty>This screen hasn't been built yet.</Empty>
+      <div className="mb-5 flex gap-2 overflow-x-auto">
+        {(["all", ...Object.keys(STATUS_LABEL)] as (SubStatus | "all")[]).map((k) => (
+          <button key={k} onClick={() => setFilter(k)} className={cn("whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium", filter === k ? "bg-primary text-primary-foreground" : "bg-secondary")}>
+            {k === "all" ? "All" : STATUS_LABEL[k]}
+          </button>
+        ))}
+      </div>
+      {!list.length ? <Empty>No subscriptions here.</Empty> : <div className="grid gap-4 lg:grid-cols-2">{list.map((s) => <SubscriptionAdminCard key={s.id} sub={s} />)}</div>}
     </AppShell>
-  ),
-});
+  );
+}
