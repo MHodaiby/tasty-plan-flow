@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 import { useRefresh, type Profile, type Subscription } from "@/lib/data";
 import { daysList, defaultEndDate, errMsg, fmtDateTime, fmtShort, toISODate, type SubStatus } from "@/lib/format";
 
@@ -19,7 +20,7 @@ export function SubscriptionAdminCard({ sub }: { sub: Subscription & { profiles:
     amount: "", reference: "", notes: sub.admin_notes ?? "",
   });
 
-  async function update(patch: Parameters<ReturnType<typeof supabase.from<"subscriptions">>["update"]>[0], msg: string) {
+  async function update(patch: TablesUpdate<"subscriptions">, msg: string) {
     const { error } = await supabase.from("subscriptions").update(patch).eq("id", sub.id);
     if (error) { toast.error(errMsg(error)); return; }
     toast.success(msg); setOpen(false); refresh();
