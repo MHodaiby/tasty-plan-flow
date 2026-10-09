@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell, Empty, Loading, PageHeader, Panel } from "@/components/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -8,6 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { daysList, fmtDay, fmtShort } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
+  beforeLoad: ({ context }) => {
+    if (context.isAdmin) throw redirect({ to: "/admin" });
+  },
   head: () => ({ meta: [{ title: "Dashboard — Sage Table" }, { name: "description", content: "Your meal subscription at a glance." }, { property: "og:title", content: "Dashboard — Sage Table" }, { property: "og:description", content: "Your meal subscription at a glance." }] }),
   component: Dashboard,
 });
