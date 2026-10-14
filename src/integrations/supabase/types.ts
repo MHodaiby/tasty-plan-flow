@@ -427,6 +427,7 @@ export type Database = {
         Returns: string[]
       }
       selection_deadline: { Args: { _week_start: string }; Returns: string }
+      valid_subscription_days: { Args: { _days: number[] }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "customer"
