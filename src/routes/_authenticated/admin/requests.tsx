@@ -4,7 +4,7 @@ import { SubscriptionAdminCard } from "@/components/SubscriptionAdminCard";
 import { useAllSubs } from "@/lib/data";
 
 export const Route = createFileRoute("/_authenticated/admin/requests")({
-  head: () => ({ meta: [{ title: "Subscription Requests — Sage Table" }, { name: "description", content: "Requests awaiting payment." }, { property: "og:title", content: "Subscription Requests — Sage Table" }, { property: "og:description", content: "Requests awaiting payment." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Subscription Requests — Oui Chef" }, { name: "description", content: "Requests awaiting payment." }, { property: "og:title", content: "Subscription Requests — Oui Chef" }, { property: "og:description", content: "Requests awaiting payment." }] }),
   component: Requests,
 });
 

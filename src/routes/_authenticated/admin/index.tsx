@@ -5,7 +5,7 @@ import { weekStartOf } from "@/lib/format";
 import { needsSubscriptionReview } from "@/lib/subscription-rules";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
-  head: () => ({ meta: [{ title: "Admin — Sage Table" }, { name: "description", content: "Admin overview." }, { property: "og:title", content: "Admin — Sage Table" }, { property: "og:description", content: "Admin overview." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Admin — Oui Chef" }, { name: "description", content: "Admin overview." }, { property: "og:title", content: "Admin — Oui Chef" }, { property: "og:description", content: "Admin overview." }] }),
   component: AdminHome,
 });
 

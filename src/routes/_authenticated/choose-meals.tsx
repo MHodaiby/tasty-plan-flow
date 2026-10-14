@@ -12,7 +12,7 @@ import { errMsg, fmtDateTime, fmtDay, fmtShort, addDays, weekStartOf } from "@/l
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/choose-meals")({
-  head: () => ({ meta: [{ title: "Choose Meals — Sage Table" }, { name: "description", content: "Pick your meals for each delivery day." }, { property: "og:title", content: "Choose Meals — Sage Table" }, { property: "og:description", content: "Pick your meals for each delivery day." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Choose Meals — Oui Chef" }, { name: "description", content: "Pick your meals for each delivery day." }, { property: "og:title", content: "Choose Meals — Oui Chef" }, { property: "og:description", content: "Pick your meals for each delivery day." }] }),
   component: ChooseMeals,
 });
 

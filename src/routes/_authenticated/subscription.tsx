@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { needsSubscriptionReview, subscriptionRequestSchema } from "@/lib/subscription-rules";
 
 export const Route = createFileRoute("/_authenticated/subscription")({
-  head: () => ({ meta: [{ title: "My Subscription — Sage Table" }, { name: "description", content: "View or request your meal subscription." }, { property: "og:title", content: "My Subscription — Sage Table" }, { property: "og:description", content: "View or request your meal subscription." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "My Subscription — Oui Chef" }, { name: "description", content: "View or request your meal subscription." }, { property: "og:title", content: "My Subscription — Oui Chef" }, { property: "og:description", content: "View or request your meal subscription." }] }),
   component: SubscriptionPage,
 });
 

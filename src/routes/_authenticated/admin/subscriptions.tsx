@@ -9,7 +9,7 @@ import { needsSubscriptionReview } from "@/lib/subscription-rules";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/admin/subscriptions")({
-  head: () => ({ meta: [{ title: "Subscriptions — Sage Table" }, { name: "description", content: "Manage all subscriptions." }, { property: "og:title", content: "Subscriptions — Sage Table" }, { property: "og:description", content: "Manage all subscriptions." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Subscriptions — Oui Chef" }, { name: "description", content: "Manage all subscriptions." }, { property: "og:title", content: "Subscriptions — Oui Chef" }, { property: "og:description", content: "Manage all subscriptions." }] }),
   component: Subs,
 });
 

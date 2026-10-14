@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useAllSubs, useProfiles } from "@/lib/data";
 
 export const Route = createFileRoute("/_authenticated/admin/customers")({
-  head: () => ({ meta: [{ title: "Customers — Sage Table" }, { name: "description", content: "All customers." }, { property: "og:title", content: "Customers — Sage Table" }, { property: "og:description", content: "All customers." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Customers — Oui Chef" }, { name: "description", content: "All customers." }, { property: "og:title", content: "Customers — Oui Chef" }, { property: "og:description", content: "All customers." }] }),
   component: Customers,
 });
 

@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   beforeLoad: ({ context }) => {
     if (context.isAdmin) throw redirect({ to: "/admin" });
   },
-  head: () => ({ meta: [{ title: "Dashboard — Sage Table" }, { name: "description", content: "Your meal subscription at a glance." }, { property: "og:title", content: "Dashboard — Sage Table" }, { property: "og:description", content: "Your meal subscription at a glance." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Dashboard — Oui Chef" }, { name: "description", content: "Your meal subscription at a glance." }, { property: "og:title", content: "Dashboard — Oui Chef" }, { property: "og:description", content: "Your meal subscription at a glance." }] }),
   component: Dashboard,
 });
 
