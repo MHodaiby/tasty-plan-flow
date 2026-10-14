@@ -4,11 +4,11 @@ import { Logo } from "@/components/AppShell";
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [
-      { title: "Sage Table — Weekly chef-made meal subscriptions" },
-      { name: "description", content: "Choose 3 or 5 delivery days a week and pick fresh meals from our weekly menu." },
-      { property: "og:title", content: "Sage Table — Weekly chef-made meal subscriptions" },
-      { property: "og:description", content: "Choose 3 or 5 delivery days a week and pick fresh meals from our weekly menu." },
+    meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, 
+      { title: "Oui Chef — Weekly chef-made meal subscriptions" },
+      { name: "description", content: "Choose 2 to 5 days from Sunday to Thursday and pick fresh meals from our weekly menu." },
+      { property: "og:title", content: "Oui Chef — Weekly chef-made meal subscriptions" },
+      { property: "og:description", content: "Choose 2 to 5 days from Sunday to Thursday and pick fresh meals from our weekly menu." },
     ],
   }),
   component: Index,
@@ -27,7 +27,7 @@ function Index() {
         <div>
           <p className="text-sm font-semibold uppercase tracking-widest text-primary">Meal subscriptions</p>
           <h1 className="mt-4 text-5xl font-semibold leading-[1.05] md:text-6xl">A fresh table, on the days you choose.</h1>
-          <p className="mt-6 max-w-md text-lg text-muted-foreground">Pick 3 or 5 delivery days a week, then choose your meals from our weekly chef menu. Change your mind any time before the weekly cut-off.</p>
+          <p className="mt-6 max-w-md text-lg text-muted-foreground">Choose 2 to 5 days from Sunday to Thursday, then choose your meals from our weekly chef menu. Change your mind any time before the weekly cut-off.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/auth" className="rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground">Get started</Link>
             <Link to="/dashboard" className="rounded-full border border-border bg-background/60 px-6 py-3 font-semibold">My dashboard</Link>
@@ -41,7 +41,7 @@ function Index() {
       </section>
       <section className="grid gap-4 pb-20 pt-10 md:grid-cols-3">
         {[
-          { icon: Leaf, t: "Choose a plan", d: "Weekly or monthly, 3 or 5 days a week." },
+          { icon: Leaf, t: "Choose a plan", d: "Weekly or monthly, 2–5 days from Sunday to Thursday." },
           { icon: CalendarCheck, t: "Pick your meals", d: "Select one dish per delivery day from the weekly menu." },
           { icon: Truck, t: "Enjoy", d: "We cook and deliver to your door." },
         ].map((f) => (

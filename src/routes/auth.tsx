@@ -12,11 +12,11 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
-    meta: [
-      { title: "Sign in — Sage Table" },
-      { name: "description", content: "Sign in or create your Sage Table meal subscription account." },
-      { property: "og:title", content: "Sign in — Sage Table" },
-      { property: "og:description", content: "Sign in or create your Sage Table meal subscription account." },
+    meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, 
+      { title: "Sign in — Oui Chef" },
+      { name: "description", content: "Sign in or create your Oui Chef meal subscription account." },
+      { property: "og:title", content: "Sign in — Oui Chef" },
+      { property: "og:description", content: "Sign in or create your Oui Chef meal subscription account." },
     ],
   }),
   component: AuthPage,

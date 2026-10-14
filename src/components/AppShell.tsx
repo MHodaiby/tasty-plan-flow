@@ -29,7 +29,7 @@ export function Logo() {
   return (
     <Link to="/" className="flex items-center gap-2">
       <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground"><Leaf className="size-5" /></span>
-      <span className="font-display text-xl font-semibold">Sage Table</span>
+      <span className="font-display text-xl font-semibold">Oui Chef</span>
     </Link>
   );
 }

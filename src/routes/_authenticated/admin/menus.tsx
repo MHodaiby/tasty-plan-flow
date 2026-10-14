@@ -10,7 +10,7 @@ import { addDays, errMsg, fmtShort, weekStartOf } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin/menus")({
-  head: () => ({ meta: [{ title: "Weekly Menus — Sage Table" }, { name: "description", content: "Plan and publish weekly menus." }, { property: "og:title", content: "Weekly Menus — Sage Table" }, { property: "og:description", content: "Plan and publish weekly menus." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Weekly Menus — Oui Chef" }, { name: "description", content: "Plan and publish weekly menus." }, { property: "og:title", content: "Weekly Menus — Oui Chef" }, { property: "og:description", content: "Plan and publish weekly menus." }] }),
   component: Menus,
 });
 

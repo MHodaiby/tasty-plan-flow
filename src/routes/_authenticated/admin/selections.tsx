@@ -8,7 +8,7 @@ import { fmtDay, fmtShort, weekStartOf } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin/selections")({
-  head: () => ({ meta: [{ title: "Meal Selections — Sage Table" }, { name: "description", content: "Kitchen counts and customer choices." }, { property: "og:title", content: "Meal Selections — Sage Table" }, { property: "og:description", content: "Kitchen counts and customer choices." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Meal Selections — Oui Chef" }, { name: "description", content: "Kitchen counts and customer choices." }, { property: "og:title", content: "Meal Selections — Oui Chef" }, { property: "og:description", content: "Kitchen counts and customer choices." }] }),
   component: Selections,
 });
 

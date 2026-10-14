@@ -11,7 +11,7 @@ import { useMe, useRefresh } from "@/lib/data";
 import { errMsg } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/profile")({
-  head: () => ({ meta: [{ title: "Profile — Sage Table" }, { name: "description", content: "Update your contact and delivery details." }, { property: "og:title", content: "Profile — Sage Table" }, { property: "og:description", content: "Update your contact and delivery details." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Profile — Oui Chef" }, { name: "description", content: "Update your contact and delivery details." }, { property: "og:title", content: "Profile — Oui Chef" }, { property: "og:description", content: "Update your contact and delivery details." }] }),
   component: ProfilePage,
 });
 

@@ -13,7 +13,7 @@ import { useMeals, useRefresh } from "@/lib/data";
 import { errMsg } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/admin/meals")({
-  head: () => ({ meta: [{ title: "Meals — Sage Table" }, { name: "description", content: "Manage the meal catalogue." }, { property: "og:title", content: "Meals — Sage Table" }, { property: "og:description", content: "Manage the meal catalogue." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Meals — Oui Chef" }, { name: "description", content: "Manage the meal catalogue." }, { property: "og:title", content: "Meals — Oui Chef" }, { property: "og:description", content: "Manage the meal catalogue." }] }),
   component: Meals,
 });
 
