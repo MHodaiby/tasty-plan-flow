@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/AppShell";
 import { cn } from "@/lib/utils";
@@ -25,9 +24,8 @@ export const Route = createFileRoute("/auth")({
 const registerSchema = z.object({
   full_name: z.string().trim().min(2, "Enter your full name").max(100),
   email: z.string().trim().email("Enter a valid email"),
-  phone: z.string().trim().regex(/^\+?[0-9 ]{8,15}$/, "Enter a valid phone number"),
+  phone: z.string().trim().regex(/^\+201\d{9}$/, "Enter a valid phone number"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  delivery_address: z.string().trim().min(8, "Enter your full delivery address").max(500),
 });
 type RegisterForm = z.infer<typeof registerSchema>;
 
@@ -46,7 +44,7 @@ function AuthPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [login, setLogin] = useState({ email: "", password: "" });
-  const [reg, setReg] = useState<RegisterForm>({ full_name: "", email: "", phone: "", password: "", delivery_address: "" });
+  const [reg, setReg] = useState<RegisterForm>({ full_name: "", email: "", phone: "+20", password: ""});
   const [errors, setErrors] = useState<Partial<Record<keyof RegisterForm, string>>>({});
   const [sent, setSent] = useState(false);
 
@@ -69,10 +67,10 @@ function AuthPage() {
     }
     setErrors({});
     setBusy(true);
-    const { full_name, phone, delivery_address, email, password } = parsed.data;
+    const { full_name, phone, email, password } = parsed.data;
     const { data, error } = await supabase.auth.signUp({
       email, password,
-      options: { emailRedirectTo: `${window.location.origin}/dashboard`, data: { full_name, phone, delivery_address } },
+      options: { emailRedirectTo: `${window.location.origin}/dashboard`, data: { full_name, phone} },
     });
     setBusy(false);
     if (error) { toast.error(error.message); return; }
@@ -81,6 +79,13 @@ function AuthPage() {
   }
 
   const set = (k: keyof RegisterForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setReg({ ...reg, [k]: e.target.value });
+  const setPhone = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => { let value = e.target.value;
+    if(!value.startsWith("+20")){
+      value = "+20";
+    }
+    const digits = value.slice(3).replace(/\D/g,"").slice(0,10)
+    setReg({ ...reg, [k]: "+20"+digits })
+  }
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -115,9 +120,8 @@ function AuthPage() {
             <form onSubmit={onRegister} className="mt-6 space-y-4" noValidate>
               <Field label="Full name" error={errors.full_name}><Input value={reg.full_name} onChange={set("full_name")} /></Field>
               <Field label="Email" error={errors.email}><Input type="email" value={reg.email} onChange={set("email")} /></Field>
-              <Field label="Phone number" error={errors.phone}><Input type="tel" placeholder="+966 5x xxx xxxx" value={reg.phone} onChange={set("phone")} /></Field>
+              <Field label="Phone number" error={errors.phone}><Input type="tel" maxLength={13} value={reg.phone} onChange={setPhone("phone")} /></Field>
               <Field label="Password" error={errors.password}><Input type="password" value={reg.password} onChange={set("password")} /></Field>
-              <Field label="Delivery address" error={errors.delivery_address}><Textarea rows={3} value={reg.delivery_address} onChange={set("delivery_address")} /></Field>
               <Button type="submit" className="w-full rounded-full" size="lg" disabled={busy}>{busy ? "Creating account…" : "Create account"}</Button>
             </form>
           )}
