@@ -117,9 +117,11 @@ function AuthPage() {
               <Field label="Password">
                 <div className="relative">
                   <Input type={showPassword ? "text" : "password"} required value={login.password} onChange={(e) => setLogin({ ...login, password: e.target.value })} />
-                  <button type="button" onMouseDown={() => setShowPassword(true)} onMouseUp={() => setShowPassword(false)} onMouseLeave={() => setShowPassword(false)} onTouchStart={() => setShowPassword(true)} onTouchEnd={() => setShowPassword(false)} onTouchCancel={() => setShowPassword(false)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground rounded-md p-1 hover:bg-muted/100">
-                    <Eye />
-                  </button>
+                  {login.password.length > 0 && (
+                    <button type="button" onMouseDown={(e) => e.preventDefault()} onMouseDownCapture={() => setShowPassword(true)} onMouseUp={() => setShowPassword(false)} onMouseLeave={() => setShowPassword(false)} onTouchStart={() => setShowPassword(true)} onTouchEnd={() => setShowPassword(false)} onTouchCancel={() => setShowPassword(false)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground rounded-md p-1 hover:bg-muted/100 active:bg-muted/100">
+                      <Eye />
+                    </button>
+                  )}
                 </div>
               </Field>
               <Button type="submit" className="w-full rounded-full" size="lg" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</Button>
@@ -137,9 +139,11 @@ function AuthPage() {
               <Field label="Password" error={errors.password}>
                 <div className="relative">
                   <Input type={showPassword ? "text" : "password"} value={reg.password} onChange={set("password")} />
-                  <button type="button" onMouseDown={() => setShowPassword(true)} onMouseUp={() => setShowPassword(false)} onMouseLeave={() => setShowPassword(false)} onTouchStart={() => setShowPassword(true)} onTouchEnd={() => setShowPassword(false)} onTouchCancel={() => setShowPassword(false)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground rounded-md p-1 hover:bg-muted/100">
-                     <Eye />
-                  </button>
+                  {reg.password.length>0&&(
+                    <button type="button" onMouseDown={(e) => e.preventDefault()} onMouseDownCapture={() => setShowPassword(true)} onMouseUp={() => setShowPassword(false)} onMouseLeave={() => setShowPassword(false)} onTouchStart={() => setShowPassword(true)} onTouchEnd={() => setShowPassword(false)} onTouchCancel={() => setShowPassword(false)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground rounded-md p-1 hover:bg-muted/100 active:bg-muted/100">
+                      <Eye />
+                    </button>
+                  )}
                 </div>
               </Field>
               <Button type="submit" className="w-full rounded-full" size="lg" disabled={busy}>{busy ? "Creating account…" : "Create account"}</Button>
