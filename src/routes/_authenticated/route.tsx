@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { Loading } from "@/components/AppShell";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -10,5 +11,6 @@ export const Route = createFileRoute("/_authenticated")({
     const isAdmin = !!roles?.some((r) => r.role === "admin");
     return { user: data.user, isAdmin };
   },
+  pendingComponent: () => <div className="min-h-screen grid place-items-center"><Loading /></div>,
   component: () => <Outlet />,
 });
