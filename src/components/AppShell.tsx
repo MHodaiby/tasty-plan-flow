@@ -28,7 +28,7 @@ const ADMIN_NAV: NavItem[] = [
 export function Logo() {
   return (
     <div className="flex items-center gap-2">
-      <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground"><Leaf className="size-5" /></span>
+      <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground"><ChefHat className="size-5" /></span>
       <span className="font-display text-xl font-semibold">Oui Chef</span>
     </div>
   );

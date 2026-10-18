@@ -63,8 +63,6 @@ function ChooseMeals() {
       { subscription_id: sub.id, user_id: sub.user_id, menu_id: menu.id, delivery_date: day, meal_id: mealId },
       { onConflict: "subscription_id,delivery_date" });
     if (error) { toast.error(errMsg(error)); return; }
-    const next = week.data.dates.find((d) => d !== day && !week.data?.sels[d]);
-    if (next) setDay(next);
     refresh();
   }
   async function confirm() {
@@ -98,7 +96,7 @@ function ChooseMeals() {
                     </button>
                   );
                 })}
-                <div className="pt-2">
+                {/* <div className="pt-2">
                   {week.data.confirmedAt ? (
                     <p className="flex items-center gap-2 text-sm font-medium text-primary"><CheckCircle2 className="size-4" /> Confirmed {fmtDateTime(week.data.confirmedAt)}</p>
                   ) : closed ? (
@@ -106,7 +104,8 @@ function ChooseMeals() {
                   ) : (
                     <Button onClick={confirm} disabled={chosen < week.data.dates.length} className="w-full rounded-full">Confirm week ({chosen}/{week.data.dates.length})</Button>
                   )}
-                </div>
+                </div> */}
+                {closed && <p className="flex items-center gap-2 text-sm text-muted-foreground"><Lock className="size-4" /> Closed</p>}
               </Panel>
               <div>
                 {day && <h2 className="mb-4 text-xl font-semibold">{fmtDay(day)}</h2>}
