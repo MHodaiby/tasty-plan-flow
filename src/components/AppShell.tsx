@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import {
-  CalendarDays, ChefHat, ClipboardList, LayoutDashboard, LogOut, Repeat, User, Users, UtensilsCrossed, Inbox, Leaf,
+  CalendarDays, ChefHat, ClipboardList, LayoutDashboard, LogOut, Repeat, User, Users, UtensilsCrossed, Inbox, Leaf, Loader2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -114,6 +114,11 @@ export function Empty({ children }: { children: ReactNode }) {
   return <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">{children}</div>;
 }
 
-export function Loading() {
-  return <div className="py-16 text-center text-sm text-muted-foreground">Loading…</div>;
+export function Loading({ label = "Loading…", className }: { label?: string; className?: string }) {
+  return (
+    <div role="status" aria-live="polite" className={cn("flex flex-col items-center justify-center gap-3 py-16 text-muted-foreground", className)}>
+      <Loader2 className="size-8 animate-spin text-primary" />
+      {label && <span className="text-sm font-medium">{label}</span>}
+    </div>
+  );
 }
