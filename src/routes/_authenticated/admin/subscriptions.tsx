@@ -5,7 +5,6 @@ import { SubscriptionAdminCard } from "@/components/SubscriptionAdminCard";
 import { useAllSubs } from "@/lib/data";
 import { STATUS_LABEL, type SubStatus } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { needsSubscriptionReview } from "@/lib/subscription-rules";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/admin/subscriptions")({
@@ -15,16 +14,16 @@ export const Route = createFileRoute("/_authenticated/admin/subscriptions")({
 
 function Subs() {
   const subs = useAllSubs();
-  const [filter, setFilter] = useState<SubStatus | "all" | "review">("all");
+  const [filter, setFilter] = useState<SubStatus | "all">("all");
   if (subs.isLoading) return <AppShell variant="admin"><Loading /></AppShell>;
-  const list = (subs.data ?? []).filter((s) => filter === "all" || (filter === "review" ? needsSubscriptionReview(s) : s.status === filter));
+  const list = (subs.data ?? []).filter((s) => filter === "all" || (s.status === filter));
   return (
     <AppShell variant="admin">
       <PageHeader title="Subscriptions" subtitle="Plans include 2–5 days from Sunday to Thursday. Review any flagged existing plans with the customer." />
       <div className="mb-5 flex gap-2 overflow-x-auto">
-        {(["all", "review", ...Object.keys(STATUS_LABEL)] as (SubStatus | "all" | "review")[]).map((k) => (
+        {(["all", ...Object.keys(STATUS_LABEL)] as (SubStatus | "all")[]).map((k) => (
           <Button variant="secondary" key={k} onClick={() => setFilter(k)} className={cn("whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium", filter === k ? "bg-primary text-primary-foreground" : "bg-secondary")}>
-            {k === "all" ? "All" : k === "review" ? "Needs review" : STATUS_LABEL[k]}
+            {k === "all" ? "All" : STATUS_LABEL[k]}
           </Button>
         ))}
       </div>

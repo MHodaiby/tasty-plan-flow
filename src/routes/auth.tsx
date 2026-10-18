@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/AppShell";
 import { cn } from "@/lib/utils";
-import {Eye, EyeOff} from "lucide-react";
+import {Eye} from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({

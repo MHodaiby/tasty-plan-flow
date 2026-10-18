@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMySubs, useRefresh } from "@/lib/data";
 import { daysList, errMsg, fmtShort, OPEN_STATUSES } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { needsSubscriptionReview, subscriptionRequestSchema } from "@/lib/subscription-rules";
+import {subscriptionRequestSchema } from "@/lib/subscription-rules";
 
 export const Route = createFileRoute("/_authenticated/subscription")({
   head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "My Subscription — Oui Chef" }, { name: "description", content: "View or request your meal subscription." }, { property: "og:title", content: "My Subscription — Oui Chef" }, { property: "og:description", content: "View or request your meal subscription." }] }),
@@ -22,7 +22,7 @@ function Choice<T extends string | number>({ value, options, onChange }: { value
     <div className="grid grid-cols-2 gap-2">
       {options.map((o) => (
         <Button type="button" variant="outline" aria-pressed={value === o.v} key={String(o.v)} onClick={() => onChange(o.v)}
-          className={cn("h-auto justify-start rounded-2xl border p-4 text-left text-sm font-semibold transition", value === o.v ? "border-primary bg-primary/10 text-primary" : "border-border bg-background hover:bg-secondary")}>
+          className={cn("h-auto justify-start rounded-2xl border p-4 text-left text-sm font-semibold transition", value === o.v ? "border-primary bg-primary/100 text-secondary" : "border-border bg-background hover:bg-secondary")}>
           {o.label}
         </Button>
       ))}
@@ -34,7 +34,7 @@ function SubscriptionPage() {
   const subs = useMySubs();
   const refresh = useRefresh();
   const [period, setPeriod] = useState<"weekly" | "monthly">("weekly");
-  const [days, setDays] = useState<number[]>([0, 1, 2, 3, 4]);
+  const [days, setDays] = useState<number[]>([]);
   const [busy, setBusy] = useState(false);
   const parsed = subscriptionRequestSchema.safeParse({ billing_period: period, default_days: days });
   const count = days.length;
@@ -68,8 +68,7 @@ function SubscriptionPage() {
                 <Choice value={period} onChange={setPeriod} options={[{ v: "weekly", label: "Weekly" }, { v: "monthly", label: "Monthly" }]} /></div>
               <div className="space-y-2"><Label>2. Choose your subscription days</Label><DayPicker value={days} onChange={setDays} />
                 <p aria-live="polite" className={cn("text-sm", parsed.success ? "text-primary" : "text-destructive")}>{count < 2 ? "Choose at least 2 days" : `${count} days per week selected`}</p>
-                {!parsed.success && <p role="alert" className="text-sm text-destructive">Please select between 2 and 5 days.</p>}
-              </div>
+                </div>
               <div className="space-y-2 border-t border-border pt-4"><Label>3. Review and submit</Label>
                 <dl className="space-y-2 text-sm">
                   <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Billing period</dt><dd className="capitalize">{period}</dd></div>
@@ -77,7 +76,7 @@ function SubscriptionPage() {
                   <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Weekly plan</dt><dd>{count} days per week</dd></div>
                 </dl>
               </div>
-              <Button onClick={submit} disabled={busy || !parsed.success} className="w-full rounded-full" size="lg">{busy ? "Sending…" : "Send request"}</Button>
+              <Button onClick={submit} disabled= {busy || !parsed.success} className="w-full rounded-full" size="lg">{busy ? "Sending…" : "Send request"}</Button>
               <p className="text-xs text-muted-foreground">No payment now. We'll send a payment link and activate your plan once it's paid.</p>
             </div>
           </Panel>
@@ -89,7 +88,6 @@ function SubscriptionPage() {
               <div key={s.id} className="rounded-2xl border border-border bg-background/60 p-4 text-sm">
                 <div className="flex items-center justify-between gap-2"><span className="font-semibold capitalize">{s.billing_period} · {s.days_per_week} days</span><StatusBadge status={s.status} /></div>
                 <p className="mt-2 text-muted-foreground">{daysList(s.default_days)}</p>
-                 {needsSubscriptionReview(s) && <p className="mt-2 text-destructive">Administrator review needed. Our subscription days run from Sunday to Thursday; your original days are preserved.</p>}
                 <p className="text-muted-foreground">{fmtShort(s.start_date)} – {fmtShort(s.end_date)} · requested {fmtShort(s.created_at.slice(0, 10))}</p>
               </div>
             ))}

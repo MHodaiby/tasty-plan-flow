@@ -9,7 +9,3 @@ export const subscriptionRequestSchema = z.object({
   billing_period: z.enum(["weekly", "monthly"]),
   default_days: subscriptionDaysSchema,
 }).transform((request) => ({ ...request, default_days: [...request.default_days].sort((a, b) => a - b), days_per_week: request.default_days.length }));
-
-export function needsSubscriptionReview(sub: { default_days: number[]; days_per_week: number }) {
-  return !subscriptionDaysSchema.safeParse(sub.default_days).success || sub.days_per_week !== sub.default_days.length;
-}

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useMe, useMySubs } from "@/lib/data";
 import { supabase } from "@/integrations/supabase/client";
 import { daysList, fmtDay, fmtShort } from "@/lib/format";
-import { needsSubscriptionReview } from "@/lib/subscription-rules";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   beforeLoad: ({ context }) => {
@@ -49,7 +48,6 @@ function Dashboard() {
               <StatusBadge status={sub.status} />
               <p><span className="text-muted-foreground">Plan:</span> {sub.days_per_week} days / week, billed {sub.billing_period}</p>
               <p><span className="text-muted-foreground">Days:</span> {daysList(sub.default_days)}</p>
-              {needsSubscriptionReview(sub) && <p className="text-destructive">Your subscription days need administrator review. Your original selections are preserved.</p>}
               <p><span className="text-muted-foreground">Period:</span> {fmtShort(sub.start_date)} – {fmtShort(sub.end_date)}</p>
               {sub.status === "pending_payment" && <p className="rounded-2xl bg-accent p-3 text-accent-foreground">We'll send you a payment link. Your subscription starts once payment is received.</p>}
             </div>

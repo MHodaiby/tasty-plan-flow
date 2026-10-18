@@ -27,10 +27,10 @@ const ADMIN_NAV: NavItem[] = [
 
 export function Logo() {
   return (
-    <Link to="/" className="flex items-center gap-2">
+    <div className="flex items-center gap-2">
       <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground"><Leaf className="size-5" /></span>
       <span className="font-display text-xl font-semibold">Oui Chef</span>
-    </Link>
+    </div>
   );
 }
 
@@ -43,7 +43,7 @@ export function AppShell({ variant, children }: { variant: "customer" | "admin";
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    navigate({ to: "/", replace: true });
   }
 
   const linkCls = "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground";

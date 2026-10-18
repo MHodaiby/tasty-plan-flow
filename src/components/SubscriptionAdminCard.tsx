@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DayPicker } from "@/components/DayPicker";
-import { needsSubscriptionReview, subscriptionDaysSchema } from "@/lib/subscription-rules";
+import {subscriptionDaysSchema } from "@/lib/subscription-rules";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import type { TablesUpdate } from "@/integrations/supabase/types";
@@ -17,7 +17,6 @@ export function SubscriptionAdminCard({ sub }: { sub: Subscription & { profiles:
   const refresh = useRefresh();
   const [open, setOpen] = useState(false);
   const [days, setDays] = useState([...sub.default_days]);
-  const review = needsSubscriptionReview(sub);
   const validDays = subscriptionDaysSchema.safeParse(days).success;
   const daysChanged = days.join() !== sub.default_days.join();
   const today = toISODate(new Date());
@@ -33,7 +32,7 @@ export function SubscriptionAdminCard({ sub }: { sub: Subscription & { profiles:
     toast.success(msg); setOpen(false); refresh();
   }
   async function activate() {
-    if (!validDays) { toast.error("Review subscription days before activation."); return; }
+    if (!validDays) { toast.error("Please select between 2 and 5 days."); return; }
     if (!f.start || !f.end || f.end < f.start) { toast.error("Choose a valid start and end date"); return; }
     const { data } = await supabase.auth.getUser();
     if (!data.user) { toast.error("Please sign in again."); return; }
@@ -50,7 +49,6 @@ export function SubscriptionAdminCard({ sub }: { sub: Subscription & { profiles:
         <StatusBadge status={sub.status} />
       </div>
       <p className="mt-3 capitalize">{sub.billing_period} · {sub.days_per_week} days · {daysList(sub.default_days)}</p>
-      {review && <p role="alert" className="mt-2 text-destructive">Administrator review needed: this plan does not meet the 2–5 distinct days, Sunday–Thursday rule. Original days are preserved. Confirm revised days with the customer before saving.</p>}
       <p className="text-muted-foreground">{fmtShort(sub.start_date)} – {fmtShort(sub.end_date)} · requested {fmtDateTime(sub.created_at)}</p>
       {sub.admin_notes && <p className="mt-1 italic text-muted-foreground">{sub.admin_notes}</p>}
 
@@ -79,7 +77,7 @@ export function SubscriptionAdminCard({ sub }: { sub: Subscription & { profiles:
         <div className="mt-4 flex flex-wrap gap-2">
           <Button size="sm" className="rounded-full" onClick={() => setOpen(true)}>{sub.status === "pending_payment" ? "Record payment" : "Edit subscription"}</Button>
           {sub.status === "active" && <Button size="sm" variant="outline" className="rounded-full" onClick={() => setStatus("paused")}>Pause</Button>}
-          {sub.status === "paused" && <Button size="sm" variant="outline" disabled={review} className="rounded-full" onClick={() => setStatus("active")}>Resume</Button>}
+          {sub.status === "paused" && <Button size="sm" variant="outline" className="rounded-full" onClick={() => setStatus("active")}>Resume</Button>}
           {["active", "paused"].includes(sub.status) && <Button size="sm" variant="outline" className="rounded-full" onClick={() => setStatus("expired")}>Expire</Button>}
           {sub.status !== "cancelled" && <Button size="sm" variant="ghost" className="rounded-full text-destructive" onClick={() => confirm("Cancel this subscription?") && setStatus("cancelled")}>Cancel</Button>}
         </div>

@@ -10,7 +10,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { must, useMySubs, useRefresh, type Menu } from "@/lib/data";
 import { errMsg, fmtDateTime, fmtDay, fmtShort, addDays, weekStartOf } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { needsSubscriptionReview } from "@/lib/subscription-rules";
 
 export const Route = createFileRoute("/_authenticated/choose-meals")({
   head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Choose Meals — Oui Chef" }, { name: "description", content: "Pick your meals for each delivery day." }, { property: "og:title", content: "Choose Meals — Oui Chef" }, { property: "og:description", content: "Pick your meals for each delivery day." }] }),
@@ -32,7 +31,7 @@ function ChooseMeals() {
 
   const week = useQuery({
     queryKey: ["week", sub?.id, menu?.id],
-    enabled: !!sub && !!menu && !needsSubscriptionReview(sub),
+    enabled: !!sub && !!menu,
     queryFn: async () => {
       if (!sub || !menu) throw new Error("Choose an active subscription and menu.");
       const [deadline, dates, sels, conf] = await Promise.all([
@@ -53,8 +52,6 @@ function ChooseMeals() {
       <Empty>Meal selection opens once your subscription is active. <Link to="/subscription" className="font-semibold text-primary underline">View subscription</Link></Empty>
     </AppShell>
   );
-
-  if (needsSubscriptionReview(sub)) return <AppShell variant="customer"><PageHeader title="Choose Meals" /><Empty>Your subscription days need administrator review before choosing new meals. Our subscription days run from Sunday to Thursday. Your original selections are preserved.</Empty></AppShell>;
 
   const closed = week.data ? new Date() >= new Date(week.data.deadline) : false;
   const meals = (menu?.weekly_menu_items ?? []).map((i) => i.meals).filter((m) => m?.is_active);
