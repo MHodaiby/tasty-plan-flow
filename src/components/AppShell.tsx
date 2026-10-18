@@ -122,3 +122,24 @@ export function Loading({ label = "Loading…", className }: { label?: string; c
     </div>
   );
 }
+
+export function PageSkeleton() {
+  const bar = "animate-pulse rounded-xl bg-muted";
+  return (
+    <div role="status" aria-label="Loading" aria-busy="true">
+      <div className="mb-8 space-y-3">
+        <div className={cn(bar, "h-9 w-64")} />
+        <div className={cn(bar, "h-4 w-96 max-w-full")} />
+      </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        {[0, 1, 2].map((i) => <div key={i} className={cn(bar, "h-28 rounded-3xl")} />)}
+      </div>
+      <div className={cn(bar, "mt-6 h-64 rounded-3xl")} />
+    </div>
+  );
+}
+
+export function PendingShell() {
+  const path = typeof window !== "undefined" ? window.location.pathname : "";
+  return <AppShell variant={path.startsWith("/admin") ? "admin" : "customer"}><PageSkeleton /></AppShell>;
+}

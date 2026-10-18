@@ -4,7 +4,6 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
-  useRouterState,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
@@ -134,7 +133,6 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <NavProgress />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster richColors position="top-center" />
@@ -142,14 +140,3 @@ function RootComponent() {
   );
 }
 
-function NavProgress() {
-  const pending = useRouterState({ select: (s) => s.status === "pending" || s.isLoading });
-  return (
-    <div
-      aria-hidden
-      className={`pointer-events-none fixed inset-x-0 top-0 z-[100] h-1 overflow-hidden transition-opacity duration-200 ${pending ? "opacity-100" : "opacity-0"}`}
-    >
-      <div className="h-full w-1/3 animate-[navbar_1s_ease-in-out_infinite] rounded-full bg-primary" />
-    </div>
-  );
-}
