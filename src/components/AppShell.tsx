@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import {
@@ -38,6 +38,9 @@ export function AppShell({ variant, children }: { variant: "customer" | "admin";
   const nav = variant === "admin" ? ADMIN_NAV : CUSTOMER_NAV;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const isNavigating = useRouterState({
+    select: (s) => s.status === "pending" && s.location.pathname !== s.resolvedLocation?.pathname,
+  });
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -78,7 +81,7 @@ export function AppShell({ variant, children }: { variant: "customer" | "admin";
         </nav>
       )}
 
-      <main className={cn("mx-auto w-full max-w-6xl flex-1 px-4 py-6 md:px-10 md:py-10", variant === "customer" && "pb-28 md:pb-10")}>{children}</main>
+      <main className={cn("mx-auto w-full max-w-6xl flex-1 px-4 py-6 md:px-10 md:py-10", variant === "customer" && "pb-28 md:pb-10")}>{isNavigating ? <PageSkeleton /> : children}</main>
 
       {variant === "customer" && (
         <nav className="glass fixed inset-x-3 bottom-3 z-30 grid grid-cols-4 rounded-2xl p-1.5 md:hidden">
