@@ -21,7 +21,7 @@ function Index() {
     <div className="mx-auto max-w-6xl px-4 md:px-8">
       <header className="flex items-center justify-between py-6">
         <Logo />
-        <Link to="/auth" className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground">Sign in</Link>
+        <Link to="/auth" className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Sign in</Link>
       </header>
       <section className="grid items-center gap-10 py-10 md:grid-cols-2 md:py-20">
         <div>
@@ -29,8 +29,8 @@ function Index() {
           <h1 className="mt-4 text-5xl font-semibold leading-[1.05] md:text-6xl">A fresh table, on the days you choose.</h1>
           <p className="mt-6 max-w-md text-lg text-muted-foreground">Choose 2 to 5 days from Sunday to Thursday, then choose your meals from our weekly chef menu. Change your mind any time before the weekly cut-off.</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/auth" className="rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground">Get started</Link>
-            <Link to="/dashboard" className="rounded-full border border-border bg-background/60 px-6 py-3 font-semibold">My dashboard</Link>
+            <Link to="/auth" className="rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:bg-primary/90">Get started</Link>
+            <Link to="/dashboard" className="rounded-full border border-border bg-background/20 px-6 py-3 font-semibold hover:bg-muted/80">My dashboard</Link>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
