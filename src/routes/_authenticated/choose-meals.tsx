@@ -7,12 +7,21 @@ import { AppShell, Empty, Loading, PageHeader, Panel } from "@/components/AppShe
 import { MealCard, type Meal } from "@/components/MealCard";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { must, useMySubs, useRefresh, type Menu } from "@/lib/data";
+import { must, useMySubs, useRefresh, type Menu, usePublishedMenus } from "@/lib/data";
 import { errMsg, fmtDateTime, fmtDay, fmtShort, addDays, weekStartOf } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/choose-meals")({
-  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Choose Meals — Oui Chef" }, { name: "description", content: "Pick your meals for each delivery day." }, { property: "og:title", content: "Choose Meals — Oui Chef" }, { property: "og:description", content: "Pick your meals for each delivery day." }] }),
+  head: () => ({
+    meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { title: "Choose Meals — Oui Chef" },
+      { name: "description", content: "Pick your meals for each delivery day." },
+      { property: "og:title", content: "Choose Meals — Oui Chef" },
+      { property: "og:description", content: "Pick your meals for each delivery day." },
+    ],
+  }),
   component: ChooseMeals,
 });
 
@@ -20,13 +29,12 @@ function ChooseMeals() {
   const subs = useMySubs();
   const sub = subs.data?.find((s) => s.status === "active");
   const refresh = useRefresh();
-  const menus = useQuery({
-    queryKey: ["published-menus"],
-    queryFn: () => must<(Menu & { weekly_menu_items: { meals: Meal & { is_active: boolean } }[] })[]>(
-      supabase.from("weekly_menus").select("*, weekly_menu_items(meals(*))").eq("is_published", true).gte("week_start", weekStartOf()).order("week_start") as never),
-  });
+  const menus = usePublishedMenus();
   const [menuId, setMenuId] = useState<string>();
-  useEffect(() => { const first = menus.data?.[0]; if (!menuId && first) setMenuId(first.id); }, [menus.data, menuId]);
+  useEffect(() => {
+    const first = menus.data?.[0];
+    if (!menuId && first) setMenuId(first.id);
+  }, [menus.data, menuId]);
   const menu = menus.data?.find((m) => m.id === menuId);
 
   const week = useQuery({
@@ -36,22 +44,58 @@ function ChooseMeals() {
       if (!sub || !menu) throw new Error("Choose an active subscription and menu.");
       const [deadline, dates, sels, conf] = await Promise.all([
         must<string>(supabase.rpc("selection_deadline", { _week_start: menu.week_start })),
-        must<string[]>(supabase.rpc("required_dates", { _subscription_id: sub.id, _week_start: menu.week_start })),
-        must<{ delivery_date: string; meal_id: string }[]>(supabase.from("meal_selections").select("delivery_date, meal_id").eq("subscription_id", sub.id).eq("menu_id", menu.id)),
-        must<{ confirmed_at: string }[]>(supabase.from("week_confirmations").select("confirmed_at").eq("subscription_id", sub.id).eq("menu_id", menu.id)),
+        must<string[]>(
+          supabase.rpc("required_dates", {
+            _subscription_id: sub.id,
+            _week_start: menu.week_start,
+          }),
+        ),
+        must<{ delivery_date: string; meal_id: string }[]>(
+          supabase
+            .from("meal_selections")
+            .select("delivery_date, meal_id")
+            .eq("subscription_id", sub.id)
+            .eq("menu_id", menu.id),
+        ),
+        must<{ confirmed_at: string }[]>(
+          supabase
+            .from("week_confirmations")
+            .select("confirmed_at")
+            .eq("subscription_id", sub.id)
+            .eq("menu_id", menu.id),
+        ),
       ]);
-      return { deadline, dates: [...dates].sort(), sels: Object.fromEntries(sels.map((s) => [s.delivery_date, s.meal_id])), confirmedAt: conf[0]?.confirmed_at };
+      return {
+        deadline,
+        dates: [...dates].sort(),
+        sels: Object.fromEntries(sels.map((s) => [s.delivery_date, s.meal_id])),
+        confirmedAt: conf[0]?.confirmed_at,
+      };
     },
   });
   const [day, setDay] = useState<string>();
-  useEffect(() => { setDay(week.data?.dates[0]); }, [week.data?.dates.join()]);
+  useEffect(() => {
+    setDay(week.data?.dates[0]);
+  }, [week.data?.dates.join()]);
 
-  if (subs.isLoading || menus.isLoading) return <AppShell variant="customer"><Loading /></AppShell>;
-  if (!sub) return (
-    <AppShell variant="customer"><PageHeader title="Choose Meals" />
-      <Empty>Meal selection opens once your subscription is active. <Link to="/subscription" className="font-semibold text-primary underline">View subscription</Link></Empty>
-    </AppShell>
-  );
+  if (subs.isLoading || menus.isLoading)
+    return (
+      <AppShell variant="customer">
+        <Loading />
+      </AppShell>
+    );
+  if (!sub)
+    return (
+      <AppShell variant="customer">
+        <PageHeader title="Choose Meals" />
+        <Empty>
+          Meal selection opens once your subscription is active.{" "}
+          <Link to="/subscription" className="font-semibold text-primary underline">
+            View subscription
+          </Link>
+        </Empty>
+      </AppShell>
+    );
 
   const closed = week.data ? new Date() >= new Date(week.data.deadline) : false;
   const meals = (menu?.weekly_menu_items ?? []).map((i) => i.meals).filter((m) => m?.is_active);
@@ -60,39 +104,91 @@ function ChooseMeals() {
   async function pick(mealId: string) {
     if (!day || !menu || !sub || !week.data || closed) return;
     const { error } = await supabase.from("meal_selections").upsert(
-      { subscription_id: sub.id, user_id: sub.user_id, menu_id: menu.id, delivery_date: day, meal_id: mealId },
-      { onConflict: "subscription_id,delivery_date" });
-    if (error) { toast.error(errMsg(error)); return; }
+      {
+        subscription_id: sub.id,
+        user_id: sub.user_id,
+        menu_id: menu.id,
+        delivery_date: day,
+        meal_id: mealId,
+      },
+      { onConflict: "subscription_id,delivery_date" },
+    );
+    if (error) {
+      toast.error(errMsg(error));
+      return;
+    }
     refresh();
   }
   async function confirm() {
     if (!sub || !menu || closed) return;
-    const { error } = await supabase.rpc("confirm_week", { _subscription_id: sub.id, _menu_id: menu.id });
-    if (error) { toast.error(errMsg(error)); return; }
-    toast.success("Your week is confirmed!"); refresh();
+    const { error } = await supabase.rpc("confirm_week", {
+      _subscription_id: sub.id,
+      _menu_id: menu.id,
+    });
+    if (error) {
+      toast.error(errMsg(error));
+      return;
+    }
+    toast.success("Your week is confirmed!");
+    refresh();
   }
 
   return (
     <AppShell variant="customer">
-      <PageHeader title="Choose Meals" subtitle={week.data && (closed ? "Selection for this week is closed." : `Choose by ${fmtDateTime(week.data.deadline)}`)} />
-      {!menus.data?.length ? <Empty>The next weekly menu hasn't been published yet. Check back soon.</Empty> : (
+      <PageHeader
+        title="Choose Meals"
+        subtitle={
+          week.data &&
+          (closed
+            ? "Selection for this week is closed."
+            : `Choose by ${fmtDateTime(week.data.deadline)}`)
+        }
+      />
+      {!menus.data?.length ? (
+        <Empty>The next weekly menu hasn't been published yet. Check back soon.</Empty>
+      ) : (
         <>
           <div className="mb-5 flex gap-2 overflow-x-auto">
             {menus.data.map((m) => (
-              <button key={m.id} onClick={() => setMenuId(m.id)} className={cn("whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium", m.id === menuId ? "bg-primary text-primary-foreground" : "bg-secondary")}>
+              <button
+                key={m.id}
+                onClick={() => setMenuId(m.id)}
+                className={cn(
+                  "whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium",
+                  m.id === menuId ? "bg-primary text-primary-foreground" : "bg-secondary",
+                )}
+              >
                 Week of {fmtShort(m.week_start)}
               </button>
             ))}
           </div>
-          {week.isLoading || !week.data ? <Loading /> : !week.data.dates.length ? <Empty>No deliveries for you this week (week of {fmtShort(menu?.week_start)} – {menu && fmtShort(addDays(menu.week_start, 4))}).</Empty> : (
+          {week.isLoading || !week.data ? (
+            <Loading />
+          ) : !week.data.dates.length ? (
+            <Empty>
+              No deliveries for you this week (week of {fmtShort(menu?.week_start)} –{" "}
+              {menu && fmtShort(addDays(menu.week_start, 4))}).
+            </Empty>
+          ) : (
             <div className="grid gap-5 lg:grid-cols-[280px_1fr]">
               <Panel className="h-fit space-y-2 lg:sticky lg:top-6">
                 {week.data.dates.map((d) => {
                   const m = meals.find((x) => x.id === week.data?.sels[d]);
                   return (
-                    <button key={d} onClick={() => setDay(d)} className={cn("w-full rounded-2xl border p-3 text-left text-sm transition", d === day ? "border-primary bg-primary/10" : "border-border bg-background/60")}>
+                    <button
+                      key={d}
+                      onClick={() => setDay(d)}
+                      className={cn(
+                        "w-full rounded-2xl border p-3 text-left text-sm transition",
+                        d === day
+                          ? "border-primary bg-primary/10"
+                          : "border-border bg-background/60",
+                      )}
+                    >
                       <div className="font-semibold">{fmtDay(d)}</div>
-                      <div className={cn("text-xs", m ? "text-primary" : "text-muted-foreground")}>{m?.name ?? "Not chosen"}</div>
+                      <div className={cn("text-xs", m ? "text-primary" : "text-muted-foreground")}>
+                        {m?.name ?? "Not chosen"}
+                      </div>
                     </button>
                   );
                 })}
@@ -105,12 +201,24 @@ function ChooseMeals() {
                     <Button onClick={confirm} disabled={chosen < week.data.dates.length} className="w-full rounded-full">Confirm week ({chosen}/{week.data.dates.length})</Button>
                   )}
                 </div> */}
-                {closed && <p className="flex items-center gap-2 text-sm text-muted-foreground"><Lock className="size-4" /> Closed</p>}
+                {closed && (
+                  <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Lock className="size-4" /> Closed
+                  </p>
+                )}
               </Panel>
               <div>
                 {day && <h2 className="mb-4 text-xl font-semibold">{fmtDay(day)}</h2>}
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {meals.map((m) => <MealCard key={m.id} meal={m} selected={!!day && week.data?.sels[day] === m.id} disabled={closed} onSelect={() => pick(m.id)} />)}
+                  {meals.map((m) => (
+                    <MealCard
+                      key={m.id}
+                      meal={m}
+                      selected={!!day && week.data?.sels[day] === m.id}
+                      disabled={closed}
+                      onSelect={() => pick(m.id)}
+                    />
+                  ))}
                 </div>
               </div>
             </div>

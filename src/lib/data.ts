@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Meal } from "@/components/MealCard";
-import type { SubStatus } from "@/lib/format";
+import { weekStartOf, type SubStatus } from "@/lib/format";
 
 export type Subscription = {
   id: string;
@@ -118,5 +118,72 @@ export function useRefresh() {
   const qc = useQueryClient();
   return () => qc.invalidateQueries();
 }
+
+export const usePublishedMenus = () =>
+  useQuery({
+    queryKey: ["published-menus"],
+    queryFn: () =>
+      must<(Menu & { weekly_menu_items: { meals: Meal & { is_active: boolean } }[] })[]>(
+        supabase
+          .from("weekly_menus")
+          .select("*, weekly_menu_items(meals(*))")
+          .eq("is_published", true)
+          .gte("week_start", weekStartOf())
+          .order("week_start") as never,
+      ),
+  });
+
+export const useWeeklySelection = (
+  sub:
+    | (Subscription & {
+        profiles: Profile | null;
+      })
+    | undefined,
+  menu:
+    | (Menu & {
+        weekly_menu_items: {
+          meals: Meal & {
+            is_active: boolean;
+          };
+        }[];
+      })
+    | undefined,
+) =>
+  useQuery({
+    queryKey: ["week", sub?.id, menu?.id],
+    enabled: !!sub && !!menu,
+    queryFn: async () => {
+      if (!sub || !menu) throw new Error("Choose an active subscription and menu.");
+      const [deadline, dates, sels, conf] = await Promise.all([
+        must<string>(supabase.rpc("selection_deadline", { _week_start: menu.week_start })),
+        must<string[]>(
+          supabase.rpc("required_dates", {
+            _subscription_id: sub.id,
+            _week_start: menu.week_start,
+          }),
+        ),
+        must<{ delivery_date: string; meal_id: string }[]>(
+          supabase
+            .from("meal_selections")
+            .select("delivery_date, meal_id")
+            .eq("subscription_id", sub.id)
+            .eq("menu_id", menu.id),
+        ),
+        must<{ confirmed_at: string }[]>(
+          supabase
+            .from("week_confirmations")
+            .select("confirmed_at")
+            .eq("subscription_id", sub.id)
+            .eq("menu_id", menu.id),
+        ),
+      ]);
+      return {
+        deadline,
+        dates: [...dates].sort(),
+        sels: Object.fromEntries(sels.map((s) => [s.delivery_date, s.meal_id])),
+        confirmedAt: conf[0]?.confirmed_at,
+      };
+    },
+  });
 
 export { must };
