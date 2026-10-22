@@ -220,10 +220,5 @@ export function PageSkeleton() {
 }
 
 export function PendingShell() {
-  const path = typeof window !== "undefined" ? window.location.pathname : "";
-  return (
-    <AppShell variant={path.startsWith("/admin") ? "admin" : "customer"}>
-      <PageSkeleton />
-    </AppShell>
-  );
+  return <PageSkeleton />;
 }
