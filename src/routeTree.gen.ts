@@ -18,12 +18,14 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedSubscriptionRouteImport } from './routes/_authenticated/subscription'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
-import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin/customers'
+import { Route as AuthenticatedAdminCustomersRouteRouteImport } from './routes/_authenticated/admin/customers/route'
 import { Route as AuthenticatedAdminMealsRouteImport } from './routes/_authenticated/admin/meals'
 import { Route as AuthenticatedAdminMenusRouteImport } from './routes/_authenticated/admin/menus'
 import { Route as AuthenticatedAdminRequestsRouteImport } from './routes/_authenticated/admin/requests'
 import { Route as AuthenticatedAdminSelectionsRouteImport } from './routes/_authenticated/admin/selections'
 import { Route as AuthenticatedAdminSubscriptionsRouteImport } from './routes/_authenticated/admin/subscriptions'
+import { Route as AuthenticatedAdminCustomersIndexRouteImport } from './routes/_authenticated/admin/customers/index'
+import { Route as AuthenticatedAdminCustomersCustomerIdRouteImport } from './routes/_authenticated/admin/customers/$customerId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -71,8 +73,8 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
-const AuthenticatedAdminCustomersRoute =
-  AuthenticatedAdminCustomersRouteImport.update({
+const AuthenticatedAdminCustomersRouteRoute =
+  AuthenticatedAdminCustomersRouteRouteImport.update({
     id: '/customers',
     path: '/customers',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
@@ -105,6 +107,18 @@ const AuthenticatedAdminSubscriptionsRoute =
     path: '/subscriptions',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminCustomersIndexRoute =
+  AuthenticatedAdminCustomersIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAdminCustomersRouteRoute,
+  } as any)
+const AuthenticatedAdminCustomersCustomerIdRoute =
+  AuthenticatedAdminCustomersCustomerIdRouteImport.update({
+    id: '/$customerId',
+    path: '/$customerId',
+    getParentRoute: () => AuthenticatedAdminCustomersRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -114,13 +128,15 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/subscription': typeof AuthenticatedSubscriptionRoute
-  '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin/customers': typeof AuthenticatedAdminCustomersRouteRouteWithChildren
   '/admin/meals': typeof AuthenticatedAdminMealsRoute
   '/admin/menus': typeof AuthenticatedAdminMenusRoute
   '/admin/requests': typeof AuthenticatedAdminRequestsRoute
   '/admin/selections': typeof AuthenticatedAdminSelectionsRoute
   '/admin/subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/customers/$customerId': typeof AuthenticatedAdminCustomersCustomerIdRoute
+  '/admin/customers/': typeof AuthenticatedAdminCustomersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -129,13 +145,14 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/subscription': typeof AuthenticatedSubscriptionRoute
-  '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/meals': typeof AuthenticatedAdminMealsRoute
   '/admin/menus': typeof AuthenticatedAdminMenusRoute
   '/admin/requests': typeof AuthenticatedAdminRequestsRoute
   '/admin/selections': typeof AuthenticatedAdminSelectionsRoute
   '/admin/subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/customers/$customerId': typeof AuthenticatedAdminCustomersCustomerIdRoute
+  '/admin/customers': typeof AuthenticatedAdminCustomersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -147,13 +164,15 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/subscription': typeof AuthenticatedSubscriptionRoute
-  '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRouteRouteWithChildren
   '/_authenticated/admin/meals': typeof AuthenticatedAdminMealsRoute
   '/_authenticated/admin/menus': typeof AuthenticatedAdminMenusRoute
   '/_authenticated/admin/requests': typeof AuthenticatedAdminRequestsRoute
   '/_authenticated/admin/selections': typeof AuthenticatedAdminSelectionsRoute
   '/_authenticated/admin/subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/customers/$customerId': typeof AuthenticatedAdminCustomersCustomerIdRoute
+  '/_authenticated/admin/customers/': typeof AuthenticatedAdminCustomersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -172,6 +191,8 @@ export interface FileRouteTypes {
     | '/admin/selections'
     | '/admin/subscriptions'
     | '/admin/'
+    | '/admin/customers/$customerId'
+    | '/admin/customers/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -180,13 +201,14 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profile'
     | '/subscription'
-    | '/admin/customers'
     | '/admin/meals'
     | '/admin/menus'
     | '/admin/requests'
     | '/admin/selections'
     | '/admin/subscriptions'
     | '/admin'
+    | '/admin/customers/$customerId'
+    | '/admin/customers'
   id:
     | '__root__'
     | '/'
@@ -204,6 +226,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/selections'
     | '/_authenticated/admin/subscriptions'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/customers/$customerId'
+    | '/_authenticated/admin/customers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -281,7 +305,7 @@ declare module '@tanstack/react-router' {
       id: '/_authenticated/admin/customers'
       path: '/customers'
       fullPath: '/admin/customers'
-      preLoaderRoute: typeof AuthenticatedAdminCustomersRouteImport
+      preLoaderRoute: typeof AuthenticatedAdminCustomersRouteRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/meals': {
@@ -319,11 +343,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSubscriptionsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/customers/': {
+      id: '/_authenticated/admin/customers/'
+      path: '/'
+      fullPath: '/admin/customers/'
+      preLoaderRoute: typeof AuthenticatedAdminCustomersIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminCustomersRouteRoute
+    }
+    '/_authenticated/admin/customers/$customerId': {
+      id: '/_authenticated/admin/customers/$customerId'
+      path: '/$customerId'
+      fullPath: '/admin/customers/$customerId'
+      preLoaderRoute: typeof AuthenticatedAdminCustomersCustomerIdRouteImport
+      parentRoute: typeof AuthenticatedAdminCustomersRouteRoute
+    }
   }
 }
 
+interface AuthenticatedAdminCustomersRouteRouteChildren {
+  AuthenticatedAdminCustomersCustomerIdRoute: typeof AuthenticatedAdminCustomersCustomerIdRoute
+  AuthenticatedAdminCustomersIndexRoute: typeof AuthenticatedAdminCustomersIndexRoute
+}
+
+const AuthenticatedAdminCustomersRouteRouteChildren: AuthenticatedAdminCustomersRouteRouteChildren =
+  {
+    AuthenticatedAdminCustomersCustomerIdRoute:
+      AuthenticatedAdminCustomersCustomerIdRoute,
+    AuthenticatedAdminCustomersIndexRoute:
+      AuthenticatedAdminCustomersIndexRoute,
+  }
+
+const AuthenticatedAdminCustomersRouteRouteWithChildren =
+  AuthenticatedAdminCustomersRouteRoute._addFileChildren(
+    AuthenticatedAdminCustomersRouteRouteChildren,
+  )
+
 interface AuthenticatedAdminRouteRouteChildren {
-  AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
+  AuthenticatedAdminCustomersRouteRoute: typeof AuthenticatedAdminCustomersRouteRouteWithChildren
   AuthenticatedAdminMealsRoute: typeof AuthenticatedAdminMealsRoute
   AuthenticatedAdminMenusRoute: typeof AuthenticatedAdminMenusRoute
   AuthenticatedAdminRequestsRoute: typeof AuthenticatedAdminRequestsRoute
@@ -334,7 +390,8 @@ interface AuthenticatedAdminRouteRouteChildren {
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
-    AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
+    AuthenticatedAdminCustomersRouteRoute:
+      AuthenticatedAdminCustomersRouteRouteWithChildren,
     AuthenticatedAdminMealsRoute: AuthenticatedAdminMealsRoute,
     AuthenticatedAdminMenusRoute: AuthenticatedAdminMenusRoute,
     AuthenticatedAdminRequestsRoute: AuthenticatedAdminRequestsRoute,
