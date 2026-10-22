@@ -242,25 +242,86 @@ function CustomerDetails() {
   }
 
   return (
-    <>
-      <PageHeader
-        title={customer.data?.full_name || "Customer Details"}
-        action={
-          <Button onClick={() => navigate({ to: "/admin/customers" })}>Back to Customers</Button>
-        }
-        subtitle={customer?.data?.email}
-      />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-        <Panel className="space-y-4">
-          <ProfilePage />
-        </Panel>
-        <Panel className="space-y-4">
-          <Subs />
-        </Panel>
+    <div className="min-h-screen bg-[#F6F3EA] px-4 py-5 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1600px] space-y-6">
+        {/* Customer header */}
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#DFE8D9] text-lg font-semibold text-[#416F4D]">
+              {customer.data?.full_name
+                ?.split(" ")
+                .map((part) => part[0])
+                .slice(0, 2)
+                .join("")
+                .toUpperCase() || "CU"}
+            </div>
+
+            <div className="min-w-0">
+              <p className="mb-1 text-xs font-medium uppercase tracking-[0.15em] text-[#758073]">
+                Customer details
+              </p>
+
+              <h1 className="truncate font-serif text-2xl font-bold tracking-tight text-[#203328] sm:text-3xl">
+                {customer.data?.full_name || "Customer Details"}
+              </h1>
+
+              <p className="mt-1 break-all text-sm text-[#73796F]">{customer.data?.email}</p>
+            </div>
+          </div>
+
+          <Button
+            onClick={() => navigate({ to: "/admin/customers" })}
+            className="w-full shrink-0 sm:w-auto"
+          >
+            Back to Customers
+          </Button>
+        </header>
+
+        {/* Profile and subscription */}
+        <section
+          aria-label="Customer overview"
+          className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2"
+        >
+          <div className="min-w-0 rounded-3xl border border-white/70 bg-[#FCFAF4] p-4 shadow-sm sm:p-6">
+            <div className="mb-5">
+              <h2 className="font-serif text-xl font-semibold text-[#203328]">Customer profile</h2>
+              <p className="mt-1 text-sm text-[#73796F]">
+                Contact information and delivery details
+              </p>
+            </div>
+
+            <ProfilePage />
+          </div>
+
+          <div className="min-w-0 rounded-3xl border border-white/70 bg-[#FCFAF4] p-4 shadow-sm sm:p-6">
+            <div className="mb-5">
+              <h2 className="font-serif text-xl font-semibold text-[#203328]">Subscription</h2>
+              <p className="mt-1 text-sm text-[#73796F]">
+                Plan details and subscription management
+              </p>
+            </div>
+
+            <Subs />
+          </div>
+        </section>
+
+        {/* Meal planner */}
+        <section
+          aria-label="Meal planner"
+          className="min-w-0 rounded-3xl border border-white/70 bg-[#FCFAF4] p-4 shadow-sm sm:p-6"
+        >
+          <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-serif text-2xl font-bold text-[#203328]">Meal planner</h2>
+              <p className="mt-1 text-sm text-[#73796F]">
+                Manage weekly deliveries and meal selections
+              </p>
+            </div>
+          </div>
+
+          <ChooseMeals />
+        </section>
       </div>
-      <Panel className="space-y-4">
-        <ChooseMeals />
-      </Panel>
-    </>
+    </div>
   );
 }
