@@ -63,25 +63,35 @@ function CustomerDetails() {
     }
     return (
       <>
-        <div className="space-y-1.5">
-          <Label>Full name</Label>
-          <Input value={f.full_name} onChange={(e) => setF({ ...f, full_name: e.target.value })} />
+        <div className="min-w-0 rounded-3xl border border-white/70 bg-[#FCFAF4] p-4 shadow-sm sm:p-6">
+          <div className="mb-5">
+            <h2 className="font-serif text-xl font-semibold text-[#203328]">Customer profile</h2>
+            <p className="mt-1 text-sm text-[#73796F]">Contact information and delivery details</p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Full name</Label>
+            <Input
+              value={f.full_name}
+              onChange={(e) => setF({ ...f, full_name: e.target.value })}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Phone number</Label>
+            <Input value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Delivery address</Label>
+            <Textarea
+              rows={3}
+              value={f.delivery_address}
+              onChange={(e) => setF({ ...f, delivery_address: e.target.value })}
+            />
+          </div>
+          <Button onClick={save} disabled={busy} className="rounded-full">
+            {busy ? "Saving…" : "Save changes"}
+          </Button>
         </div>
-        <div className="space-y-1.5">
-          <Label>Phone number</Label>
-          <Input value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Delivery address</Label>
-          <Textarea
-            rows={3}
-            value={f.delivery_address}
-            onChange={(e) => setF({ ...f, delivery_address: e.target.value })}
-          />
-        </div>
-        <Button onClick={save} disabled={busy} className="rounded-full">
-          {busy ? "Saving…" : "Save changes"}
-        </Button>
       </>
     );
   }
@@ -89,15 +99,21 @@ function CustomerDetails() {
   function Subs() {
     return (
       <>
-        {!customerSubs.data?.length ? (
-          <Empty>No subscriptions here.</Empty>
-        ) : (
-          <div>
-            {customerSubs.data?.map((s) => (
-              <SubscriptionAdminCard key={s.id} sub={s} />
-            ))}
+        <div className="min-w-0 rounded-3xl border border-white/70 bg-[#FCFAF4] p-4 shadow-sm sm:p-6">
+          <div className="mb-5">
+            <h2 className="font-serif text-xl font-semibold text-[#203328]">Subscription</h2>
+            <p className="mt-1 text-sm text-[#73796F]">Plan details and subscription management</p>
           </div>
-        )}
+          {!customerSubs.data?.length ? (
+            <Empty>No subscriptions here.</Empty>
+          ) : (
+            <div>
+              {customerSubs.data?.map((s) => (
+                <SubscriptionAdminCard key={s.id} sub={s} />
+              ))}
+            </div>
+          )}
+        </div>
       </>
     );
   }
@@ -121,7 +137,14 @@ function CustomerDetails() {
     if (!sub)
       return (
         <>
-          <PageHeader title="Choose Meals" />
+          <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-serif text-2xl font-bold text-[#203328]">Meal planner</h2>
+              <p className="mt-1 text-sm text-[#73796F]">
+                Manage weekly deliveries and meal selections
+              </p>
+            </div>
+          </div>
           <Empty>Meal selection opens once your subscription is active. </Empty>
         </>
       );
@@ -156,6 +179,14 @@ function CustomerDetails() {
 
     return (
       <>
+        <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="font-serif text-2xl font-bold text-[#203328]">Meal planner</h2>
+            <p className="mt-1 text-sm text-[#73796F]">
+              Manage weekly deliveries and meal selections
+            </p>
+          </div>
+        </div>
         {!menus.data?.length ? (
           <Empty>The next weekly menu hasn't been published yet. Check back soon.</Empty>
         ) : (
@@ -282,27 +313,8 @@ function CustomerDetails() {
           aria-label="Customer overview"
           className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2"
         >
-          <div className="min-w-0 rounded-3xl border border-white/70 bg-[#FCFAF4] p-4 shadow-sm sm:p-6">
-            <div className="mb-5">
-              <h2 className="font-serif text-xl font-semibold text-[#203328]">Customer profile</h2>
-              <p className="mt-1 text-sm text-[#73796F]">
-                Contact information and delivery details
-              </p>
-            </div>
-
-            <ProfilePage />
-          </div>
-
-          <div className="min-w-0 rounded-3xl border border-white/70 bg-[#FCFAF4] p-4 shadow-sm sm:p-6">
-            <div className="mb-5">
-              <h2 className="font-serif text-xl font-semibold text-[#203328]">Subscription</h2>
-              <p className="mt-1 text-sm text-[#73796F]">
-                Plan details and subscription management
-              </p>
-            </div>
-
-            <Subs />
-          </div>
+          <ProfilePage />
+          <Subs />
         </section>
 
         {/* Meal planner */}
@@ -310,15 +322,6 @@ function CustomerDetails() {
           aria-label="Meal planner"
           className="min-w-0 rounded-3xl border border-white/70 bg-[#FCFAF4] p-4 shadow-sm sm:p-6"
         >
-          <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="font-serif text-2xl font-bold text-[#203328]">Meal planner</h2>
-              <p className="mt-1 text-sm text-[#73796F]">
-                Manage weekly deliveries and meal selections
-              </p>
-            </div>
-          </div>
-
           <ChooseMeals />
         </section>
       </div>
