@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { MealCard } from "@/components/MealCard";
 import { fmtDateTime, fmtDay, fmtShort, addDays } from "@/lib/format";
 import { Loading } from "@/components/AppShell";
+import CustomerDetailsCard from "@/components/CustomerDetailsCard";
 
 export const Route = createFileRoute("/_authenticated/admin/customers/$customerId")({
   component: CustomerDetails,
@@ -29,72 +30,9 @@ export const Route = createFileRoute("/_authenticated/admin/customers/$customerI
 
 function CustomerDetails() {
   const { customerId } = Route.useParams();
-  const navigate = useNavigate();
   const customer = useProfile(customerId);
   const customerSubs = useUserSubs(customerId);
   const refresh = useRefresh();
-
-  function ProfilePage() {
-    const [f, setF] = useState({ full_name: "", phone: "", delivery_address: "" });
-    const [busy, setBusy] = useState(false);
-    useEffect(() => {
-      if (customer?.data)
-        setF({
-          full_name: customer.data.full_name,
-          phone: customer.data.phone,
-          delivery_address: customer.data.delivery_address,
-        });
-    }, [customer?.data]);
-
-    async function save() {
-      if (f.full_name.trim().length < 2 || f.delivery_address.trim().length < 8) {
-        toast.error("Please fill in your name and full address");
-        return;
-      }
-      setBusy(true);
-      const { error } = await supabase.from("profiles").update(f).eq("id", customer.data!.id);
-      setBusy(false);
-      if (error) {
-        toast.error(errMsg(error));
-        return;
-      }
-      toast.success("Profile saved");
-      refresh();
-    }
-    return (
-      <>
-        <div className="min-w-0 rounded-3xl border border-white/70 bg-[#FCFAF4] p-4 shadow-sm sm:p-6">
-          <div className="mb-5">
-            <h2 className="font-serif text-xl font-semibold text-[#203328]">Customer profile</h2>
-            <p className="mt-1 text-sm text-[#73796F]">Contact information and delivery details</p>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>Full name</Label>
-            <Input
-              value={f.full_name}
-              onChange={(e) => setF({ ...f, full_name: e.target.value })}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Phone number</Label>
-            <Input value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Delivery address</Label>
-            <Textarea
-              rows={3}
-              value={f.delivery_address}
-              onChange={(e) => setF({ ...f, delivery_address: e.target.value })}
-            />
-          </div>
-          <Button onClick={save} disabled={busy} className="rounded-full">
-            {busy ? "Saving…" : "Save changes"}
-          </Button>
-        </div>
-      </>
-    );
-  }
 
   function Subs() {
     return (
@@ -276,44 +214,15 @@ function CustomerDetails() {
     <div className="min-h-screen bg-[#F6F3EA] px-4 py-5 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1600px] space-y-6">
         {/* Customer header */}
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#DFE8D9] text-lg font-semibold text-[#416F4D]">
-              {customer.data?.full_name
-                ?.split(" ")
-                .map((part) => part[0])
-                .slice(0, 2)
-                .join("")
-                .toUpperCase() || "CU"}
-            </div>
 
-            <div className="min-w-0">
-              <p className="mb-1 text-xs font-medium uppercase tracking-[0.15em] text-[#758073]">
-                Customer details
-              </p>
-
-              <h1 className="truncate font-serif text-2xl font-bold tracking-tight text-[#203328] sm:text-3xl">
-                {customer.data?.full_name || "Customer Details"}
-              </h1>
-
-              <p className="mt-1 break-all text-sm text-[#73796F]">{customer.data?.email}</p>
-            </div>
-          </div>
-
-          <Button
-            onClick={() => navigate({ to: "/admin/customers" })}
-            className="w-full shrink-0 sm:w-auto"
-          >
-            Back to Customers
-          </Button>
-        </header>
+        <CustomerDetailsCard
+          customer={customer.data!}
+          status={customerSubs.data?.at(0)?.status}
+          onSave={refresh}
+        />
 
         {/* Profile and subscription */}
-        <section
-          aria-label="Customer overview"
-          className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2"
-        >
-          <ProfilePage />
+        <section aria-label="Customer overview" className="grid grid-cols-1 items-stretch gap-5">
           <Subs />
         </section>
 

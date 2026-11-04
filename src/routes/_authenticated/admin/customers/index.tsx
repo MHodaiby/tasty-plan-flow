@@ -54,7 +54,7 @@ function Customers() {
                       <p className="font-semibold">{p.full_name || "—"}</p>
                       <p className="text-muted-foreground">{p.email}</p>
                     </div>
-                    {latest && <StatusBadge status={latest.status} />}
+                    {<StatusBadge status={latest?.status} />}
                   </div>
                   <p className="mt-2">{p.phone}</p>
                   <p className="text-muted-foreground">{p.delivery_address}</p>

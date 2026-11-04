@@ -7,11 +7,24 @@ const STYLES: Record<SubStatus, string> = {
   paused: "bg-muted text-muted-foreground",
   expired: "bg-destructive/10 text-destructive",
   cancelled: "bg-destructive/10 text-destructive",
+  not_active: "bg-muted text-muted-foreground",
 };
 
-export function StatusBadge({ status, className }: { status: SubStatus; className?: string }) {
+export function StatusBadge({
+  status = "not_active",
+  className,
+}: {
+  status: SubStatus | undefined;
+  className?: string;
+}) {
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold", STYLES[status], className)}>
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold",
+        STYLES[status],
+        className,
+      )}
+    >
       <span className="size-1.5 rounded-full bg-current" />
       {STATUS_LABEL[status]}
     </span>

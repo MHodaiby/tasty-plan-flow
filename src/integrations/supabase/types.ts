@@ -429,7 +429,8 @@ export type Database = {
     Enums: {
       app_role: "admin" | "customer";
       billing_period: "weekly" | "monthly";
-      subscription_status: "pending_payment" | "active" | "paused" | "expired" | "cancelled";
+      subscription_status:
+        "pending_payment" | "active" | "paused" | "expired" | "cancelled" | "not_active";
     };
     CompositeTypes: {
       [_ in never]: never;
