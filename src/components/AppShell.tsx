@@ -127,7 +127,7 @@ export function AppShell({
 
       <main
         className={cn(
-          "mx-auto w-full max-w-6xl flex-1 px-4 py-6 md:px-10 md:py-10",
+          "w-full flex-1 px-4 py-6 md:px-10 md:py-10",
           variant === "customer" && "pb-28 md:pb-10",
         )}
       >

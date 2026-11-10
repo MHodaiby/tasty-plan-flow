@@ -211,19 +211,20 @@ function CustomerDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F6F3EA] px-4 py-5 sm:px-6 lg:px-8">
+    <div className="w-full min-h-screen bg-[#F6F3EA] px-4 py-5 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1600px] space-y-6">
-        {/* Customer header */}
-
-        <CustomerDetailsCard
-          customer={customer.data!}
-          status={customerSubs.data?.at(0)?.status}
-          onSave={refresh}
-        />
-
-        {/* Profile and subscription */}
-
-        <Subs />
+        {/* Customer overview */}
+        <section
+          aria-label="Customer overview"
+          className="grid grid-cols-1 items-start gap-5 lg:grid-cols-2"
+        >
+          <CustomerDetailsCard
+            customer={customer.data!}
+            status={customerSubs.data?.at(0)?.status}
+            onSave={refresh}
+          />
+          <Subs />
+        </section>
 
         {/* Meal planner */}
         <section
