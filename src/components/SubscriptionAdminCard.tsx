@@ -246,14 +246,14 @@ export function SubscriptionAdminCard({
               Expire
             </Button>
           )}
-          {sub.status !== "cancelled" && (
+          {sub.status === "pending_payment" && (
             <Button
               size="sm"
               variant="ghost"
               className="rounded-full text-destructive"
-              onClick={() => confirm("Cancel this subscription?") && setStatus("cancelled")}
+              onClick={() => confirm("Expire this subscription request?") && setStatus("expired")}
             >
-              Cancel
+              Expire request
             </Button>
           )}
         </div>

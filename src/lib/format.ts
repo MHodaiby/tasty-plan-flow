@@ -8,10 +8,13 @@ export const STATUS_LABEL: Record<SubStatus, string> = {
   active: "Active",
   paused: "Paused",
   expired: "Expired",
-  cancelled: "Cancelled",
+  cancelled: "Expired",
   not_active: "Not Active",
 };
 export const OPEN_STATUSES: SubStatus[] = ["pending_payment", "active", "paused"];
+// Keep the legacy database enum readable while retiring it from the application.
+export const visibleSubscriptionStatus = (status: SubStatus): Exclude<SubStatus, "cancelled"> => status === "cancelled" ? "expired" : status;
+export const VISIBLE_SUB_STATUSES = ["pending_payment", "active", "paused", "expired", "not_active"] as const;
 
 export const pad = (n: number) => String(n).padStart(2, "0");
 export const toISODate = (d: Date) =>

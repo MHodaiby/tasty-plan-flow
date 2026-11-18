@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Meal } from "@/components/MealCard";
-import { weekStartOf, type SubStatus } from "@/lib/format";
+import { weekStartOf, visibleSubscriptionStatus, type SubStatus } from "@/lib/format";
 
 export type Subscription = {
   id: string;
@@ -25,6 +25,8 @@ export type Profile = {
   created_at: string;
 };
 export type Menu = { id: string; week_start: string; is_published: boolean; notes: string | null };
+const visibleSubscriptions = <T extends Subscription>(subscriptions: T[]) =>
+  subscriptions.map((sub) => ({ ...sub, status: visibleSubscriptionStatus(sub.status) }));
 
 async function must<T>(p: PromiseLike<{ data: T | null; error: unknown }>): Promise<T> {
   const { data, error } = await p;
@@ -45,6 +47,7 @@ export const useMe = () =>
 export const useMySubs = () =>
   useQuery({
     queryKey: ["my-subs"],
+    select: visibleSubscriptions<Subscription>,
     queryFn: async () => {
       const { data } = await supabase.auth.getUser();
       return must<Subscription[]>(
@@ -60,6 +63,7 @@ export const useMySubs = () =>
 export const useAllSubs = () =>
   useQuery({
     queryKey: ["all-subs"],
+    select: visibleSubscriptions<Subscription & { profiles: Profile | null }>,
     queryFn: () =>
       must<(Subscription & { profiles: Profile | null })[]>(
         supabase
@@ -72,6 +76,7 @@ export const useAllSubs = () =>
 export const useUserSubs = (userId: string) =>
   useQuery({
     queryKey: ["user-subs", userId],
+    select: visibleSubscriptions<Subscription & { profiles: Profile | null }>,
     queryFn: () =>
       must<(Subscription & { profiles: Profile | null })[]>(
         supabase
@@ -119,18 +124,19 @@ export function useRefresh() {
   return () => qc.invalidateQueries();
 }
 
-export const usePublishedMenus = () =>
+export const usePublishedMenus = (includePast = false) =>
   useQuery({
-    queryKey: ["published-menus"],
-    queryFn: () =>
-      must<(Menu & { weekly_menu_items: { meals: Meal & { is_active: boolean } }[] })[]>(
-        supabase
-          .from("weekly_menus")
-          .select("*, weekly_menu_items(meals(*))")
-          .eq("is_published", true)
-          .gte("week_start", weekStartOf())
-          .order("week_start") as never,
-      ),
+    queryKey: includePast ? ["admin-published-menus"] : ["published-menus"],
+    queryFn: () => {
+      let query = supabase
+        .from("weekly_menus")
+        .select("*, weekly_menu_items(meals(*))")
+        .eq("is_published", true);
+      if (!includePast) query = query.gte("week_start", weekStartOf());
+      return must<(Menu & { weekly_menu_items: { meals: Meal & { is_active: boolean } }[] })[]>(
+        query.order("week_start") as never,
+      );
+    },
   });
 
 export const useWeeklySelection = (

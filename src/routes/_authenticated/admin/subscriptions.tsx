@@ -3,7 +3,7 @@ import { useState } from "react";
 import { AppShell, Empty, Loading, PageHeader } from "@/components/AppShell";
 import { SubscriptionAdminCard } from "@/components/SubscriptionAdminCard";
 import { useAllSubs } from "@/lib/data";
-import { STATUS_LABEL, type SubStatus } from "@/lib/format";
+import { STATUS_LABEL, VISIBLE_SUB_STATUSES, type SubStatus } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -21,7 +21,7 @@ function Subs() {
     <AppShell variant="admin">
       <PageHeader title="Subscriptions" subtitle="Plans include 2–5 days from Sunday to Thursday. Review any flagged existing plans with the customer." />
       <div className="mb-5 flex gap-2 overflow-x-auto">
-        {(["all", ...Object.keys(STATUS_LABEL)] as (SubStatus | "all")[]).map((k) => (
+        {(["all", ...VISIBLE_SUB_STATUSES] as (SubStatus | "all")[]).map((k) => (
           <Button variant="secondary" key={k} onClick={() => setFilter(k)} className={cn("whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium", filter === k ? "bg-primary text-primary-foreground" : "bg-secondary")}>
             {k === "all" ? "All" : STATUS_LABEL[k]}
           </Button>
